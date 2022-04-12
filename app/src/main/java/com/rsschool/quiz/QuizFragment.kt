@@ -35,19 +35,38 @@ class QuizFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var currentFragmentNumber = arguments?.getInt(FRAGMENT_NUMBER) ?: 0
-        getQuestion(currentFragmentNumber)
+        val currentUserAnswers =
+            arguments?.getIntArray(USER_ANSWERS) ?: IntArray(DataBase.questionList.size)
+        getQuestion(currentFragmentNumber, currentUserAnswers)
+
+        binding.radioGroup.setOnCheckedChangeListener { _, id ->
+            when (id) {
+                binding.optionOne.id -> currentUserAnswers[currentFragmentNumber] = 1
+                binding.optionTwo.id -> currentUserAnswers[currentFragmentNumber] = 2
+                binding.optionThree.id -> currentUserAnswers[currentFragmentNumber] = 3
+                binding.optionFour.id -> currentUserAnswers[currentFragmentNumber] = 4
+                binding.optionFive.id -> currentUserAnswers[currentFragmentNumber] = 5
+            }
+            binding.nextButton.isEnabled = true
+        }
 
         binding.nextButton.setOnClickListener {
             if (currentFragmentNumber < DataBase.questionList.size - 1) {
                 currentFragmentNumber++
-                onQuizFragmentSendDataListener.replaceFragment(currentFragmentNumber)
+                onQuizFragmentSendDataListener.replaceFragment(
+                    currentFragmentNumber,
+                    currentUserAnswers
+                )
             } else {
                 onQuizFragmentSendDataListener.resultFragment()
             }
         }
         binding.previousButton.setOnClickListener {
             currentFragmentNumber--
-            onQuizFragmentSendDataListener.replaceFragment(currentFragmentNumber)
+            onQuizFragmentSendDataListener.replaceFragment(
+                currentFragmentNumber,
+                currentUserAnswers
+            )
         }
 
     }
@@ -80,9 +99,9 @@ class QuizFragment : Fragment() {
     }
 
 
-    private fun getQuestion(fragmentNumber: Int) {
+    private fun getQuestion(fragmentNumber: Int, userAnswers: IntArray) {
         binding.apply {
-            toolbar.title = "Вопрос ${fragmentNumber + 1}  "
+            toolbar.title = "Вопрос ${fragmentNumber + 1} ${userAnswers.contentToString()} "
             question.text = DataBase.questionList[fragmentNumber].question
             optionOne.text = DataBase.questionList[fragmentNumber].option1
             optionTwo.text = DataBase.questionList[fragmentNumber].option2
@@ -103,24 +122,38 @@ class QuizFragment : Fragment() {
                     nextButton.text = "submit"
                 }
             }
+
+            when (userAnswers[fragmentNumber]) {
+                0 -> {
+                    radioGroup.clearCheck()
+                    nextButton.isEnabled = false
+                }
+                1 -> optionOne.isChecked = true
+                2 -> optionTwo.isChecked = true
+                3 -> optionThree.isChecked = true
+                4 -> optionFour.isChecked = true
+                5 -> optionFive.isChecked = true
+            }
         }
     }
 
 
     companion object {
-        fun newInstance(fragmentNumber: Int): QuizFragment {
+        fun newInstance(fragmentNumber: Int, userAnswers: IntArray): QuizFragment {
             val fragment = QuizFragment()
             val args = Bundle()
             args.putInt(FRAGMENT_NUMBER, fragmentNumber)
+            args.putIntArray(USER_ANSWERS, userAnswers)
             fragment.arguments = args
             return fragment
         }
 
         private const val FRAGMENT_NUMBER = "FRAGMENT_NUMBER"
+        private const val USER_ANSWERS = "USER_ANSWERS"
     }
 
     interface OnQuizFragmentSendData {
-        fun replaceFragment(fragmentNumber: Int)
+        fun replaceFragment(fragmentNumber: Int, userAnswers: IntArray)
         fun resultFragment()
     }
 }

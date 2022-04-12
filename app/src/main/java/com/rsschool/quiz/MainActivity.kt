@@ -7,11 +7,11 @@ class MainActivity : AppCompatActivity(), QuizFragment.OnQuizFragmentSendData, R
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        launchQuizFragment(0)
+        launchQuizFragment(0, IntArray(DataBase.questionList.size))
     }
 
-    private fun launchQuizFragment(fragmentNumber: Int) {
-        val fragment = QuizFragment.newInstance(fragmentNumber)
+    private fun launchQuizFragment(fragmentNumber: Int,userAnswers: IntArray) {
+        val fragment = QuizFragment.newInstance(fragmentNumber,userAnswers)
         supportFragmentManager.beginTransaction()
             .replace(R.id.quiz_container, fragment)
             .commit()
@@ -24,8 +24,8 @@ class MainActivity : AppCompatActivity(), QuizFragment.OnQuizFragmentSendData, R
             .commit()
     }
 
-    override fun replaceFragment(fragmentNumber: Int) {
-        launchQuizFragment(fragmentNumber)
+    override fun replaceFragment(fragmentNumber: Int, userAnswers: IntArray) {
+        launchQuizFragment(fragmentNumber,userAnswers)
     }
 
     override fun resultFragment() {
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), QuizFragment.OnQuizFragmentSendData, R
     }
 
     override fun restartQuiz() {
-        launchQuizFragment(0)
+        launchQuizFragment(0,IntArray(DataBase.questionList.size))
     }
 
 
