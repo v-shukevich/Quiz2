@@ -16,7 +16,6 @@ class QuizFragment : Fragment() {
     private lateinit var onQuizFragmentSendDataListener: OnQuizFragmentSendData
 
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         onQuizFragmentSendDataListener = context as OnQuizFragmentSendData
@@ -36,10 +35,18 @@ class QuizFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var currentFragmentNumber = arguments?.getInt(FRAGMENT_NUMBER) ?: 0
+        getQuestion(currentFragmentNumber)
 
-        binding.toolbar.title ="текущий фрагмент $currentFragmentNumber"
         binding.nextButton.setOnClickListener {
-            currentFragmentNumber++
+            if (currentFragmentNumber < DataBase.questionList.size - 1) {
+                currentFragmentNumber++
+                onQuizFragmentSendDataListener.replaceFragment(currentFragmentNumber)
+            } else {
+                onQuizFragmentSendDataListener.resultFragment()
+            }
+        }
+        binding.previousButton.setOnClickListener {
+            currentFragmentNumber--
             onQuizFragmentSendDataListener.replaceFragment(currentFragmentNumber)
         }
 
@@ -61,15 +68,42 @@ class QuizFragment : Fragment() {
         }
         context?.setTheme(id)
 
-        val idSB= when (fragmentNumber) {
-            0 ->  R.color.deep_orange_100_dark
+        val idSB = when (fragmentNumber) {
+            0 -> R.color.deep_orange_100_dark
             1 -> R.color.yellow_100_dark
             2 -> R.color.light_green_100_dark
             4 -> R.color.cyan_100_dark
             else -> R.color.deep_purple_100_dark
         }
-        activity?.window?.statusBarColor = ContextCompat.getColor(requireContext(),idSB)
+        activity?.window?.statusBarColor = ContextCompat.getColor(requireContext(), idSB)
 
+    }
+
+
+    private fun getQuestion(fragmentNumber: Int) {
+        binding.apply {
+            toolbar.title = "Вопрос ${fragmentNumber + 1}  "
+            question.text = DataBase.questionList[fragmentNumber].question
+            optionOne.text = DataBase.questionList[fragmentNumber].option1
+            optionTwo.text = DataBase.questionList[fragmentNumber].option2
+            optionThree.text = DataBase.questionList[fragmentNumber].option3
+            optionFour.text = DataBase.questionList[fragmentNumber].option4
+            optionFive.text = DataBase.questionList[fragmentNumber].option5
+
+            when (fragmentNumber) {
+                0 -> {
+                    previousButton.isEnabled = false
+                    nextButton.text = "Next"
+                }
+                in 1 until DataBase.questionList.size - 1 -> {
+                    previousButton.isEnabled = true
+                    nextButton.text = "Next"
+                }
+                DataBase.questionList.size - 1 -> {
+                    nextButton.text = "submit"
+                }
+            }
+        }
     }
 
 
@@ -77,14 +111,16 @@ class QuizFragment : Fragment() {
         fun newInstance(fragmentNumber: Int): QuizFragment {
             val fragment = QuizFragment()
             val args = Bundle()
-            args.putInt(FRAGMENT_NUMBER,fragmentNumber)
+            args.putInt(FRAGMENT_NUMBER, fragmentNumber)
             fragment.arguments = args
             return fragment
         }
+
         private const val FRAGMENT_NUMBER = "FRAGMENT_NUMBER"
     }
 
     interface OnQuizFragmentSendData {
         fun replaceFragment(fragmentNumber: Int)
+        fun resultFragment()
     }
 }
