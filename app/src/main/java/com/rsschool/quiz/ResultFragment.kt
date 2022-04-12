@@ -32,8 +32,10 @@ class ResultFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val currentUserAnswers =
+            arguments?.getIntArray(USER_ANSWERS) ?: IntArray(DataBase.questionList.size)
 
-        binding.quizResultText.text = "Ваш результат  "
+        binding.quizResultText.text = "Ваш результат ${resultQuiz(currentUserAnswers)}% ${currentUserAnswers.contentToString()}"
 
         binding.imageRestart.setOnClickListener {
             onResultFragmentListener?.restartQuiz()
@@ -47,14 +49,25 @@ class ResultFragment : Fragment(){
         _binding = null
     }
 
+    private fun resultQuiz(userAnswers: IntArray): Int{
+        var result = 0
+        for (i in userAnswers.indices){
+            if(userAnswers[i] == DataBase.questionList[i].answer){
+                result++
+            }
+        }
+        return result*100 / userAnswers.size
+    }
+
     companion object {
-        fun newInstance(): ResultFragment {
+        fun newInstance(userAnswers: IntArray): ResultFragment {
             val fragment = ResultFragment()
             val args = Bundle()
+            args.putIntArray(USER_ANSWERS, userAnswers)
             fragment.arguments = args
             return fragment
         }
-
+        private const val USER_ANSWERS = "USER_ANSWERS"
 
     }
 

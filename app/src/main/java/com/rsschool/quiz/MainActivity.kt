@@ -17,8 +17,8 @@ class MainActivity : AppCompatActivity(), QuizFragment.OnQuizFragmentSendData, R
             .commit()
     }
 
-    private fun launchResultFragment() {
-        val fragment = ResultFragment.newInstance()
+    private fun launchResultFragment(userAnswers: IntArray) {
+        val fragment = ResultFragment.newInstance(userAnswers)
         supportFragmentManager.beginTransaction()
             .replace(R.id.quiz_container, fragment)
             .commit()
@@ -28,8 +28,8 @@ class MainActivity : AppCompatActivity(), QuizFragment.OnQuizFragmentSendData, R
         launchQuizFragment(fragmentNumber,userAnswers)
     }
 
-    override fun resultFragment() {
-        launchResultFragment()
+    override fun resultFragment(userAnswers: IntArray) {
+        launchResultFragment(userAnswers)
     }
 
     override fun restartQuiz() {

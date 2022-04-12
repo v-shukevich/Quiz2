@@ -58,7 +58,7 @@ class QuizFragment : Fragment() {
                     currentUserAnswers
                 )
             } else {
-                onQuizFragmentSendDataListener.resultFragment()
+                onQuizFragmentSendDataListener.resultFragment(currentUserAnswers)
             }
         }
         binding.previousButton.setOnClickListener {
@@ -154,6 +154,6 @@ class QuizFragment : Fragment() {
 
     interface OnQuizFragmentSendData {
         fun replaceFragment(fragmentNumber: Int, userAnswers: IntArray)
-        fun resultFragment()
+        fun resultFragment(userAnswers: IntArray)
     }
 }
