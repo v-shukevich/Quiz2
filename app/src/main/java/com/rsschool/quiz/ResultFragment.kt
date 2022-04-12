@@ -74,7 +74,7 @@ class ResultFragment : Fragment() {
     }
 
     private fun shareResult(resultQuiz: Int,userAnswers: IntArray): String {
-        var shareResultText =" Результат $resultQuiz % \n "
+        var shareResultText =" Результат $resultQuiz % \n\n "
         for (i in userAnswers.indices) {
             shareResultText += "Вопрос N${i+1}: ${DataBase.questionList[i].question} \n"
             when(userAnswers[i]){

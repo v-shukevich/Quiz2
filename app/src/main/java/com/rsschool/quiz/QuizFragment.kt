@@ -68,6 +68,13 @@ class QuizFragment : Fragment() {
                 currentUserAnswers
             )
         }
+        binding.toolbar.setNavigationOnClickListener {
+            currentFragmentNumber--
+            onQuizFragmentSendDataListener.replaceFragment(
+                currentFragmentNumber,
+                currentUserAnswers
+            )
+        }
 
     }
 
@@ -101,7 +108,7 @@ class QuizFragment : Fragment() {
 
     private fun getQuestion(fragmentNumber: Int, userAnswers: IntArray) {
         binding.apply {
-            toolbar.title = "Вопрос ${fragmentNumber + 1} ${userAnswers.contentToString()} "
+            toolbar.title = "Вопрос ${fragmentNumber + 1}  "
             question.text = DataBase.questionList[fragmentNumber].question
             optionOne.text = DataBase.questionList[fragmentNumber].option1
             optionTwo.text = DataBase.questionList[fragmentNumber].option2
@@ -112,10 +119,10 @@ class QuizFragment : Fragment() {
             when (fragmentNumber) {
                 0 -> {
                     previousButton.isEnabled = false
+                    toolbar.navigationIcon = null
                     nextButton.text = "Next"
                 }
                 in 1 until DataBase.questionList.size - 1 -> {
-                    previousButton.isEnabled = true
                     nextButton.text = "Next"
                 }
                 DataBase.questionList.size - 1 -> {
